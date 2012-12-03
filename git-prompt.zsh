@@ -25,11 +25,15 @@ add-zsh-hook chpwd git_prompt_update_vars
 add-zsh-hook preexec git_prompt_preexec_is_git_command
 add-zsh-hook precmd git_prompt_precmd_update
 
-# One (much more accurate) alternative to these two preexec/precmd
-# functions is to set up a git-hook that will update the vars. However
-# that would turn this into a 3-step install (zsh source/set
-# prompt/add git hooks) instead of just (zsh source/set prompt).
-
+#-------------------------------------------------------------------
+# In case, you're wondering: isn't it better to have a hook inside
+# git instead of these two `pre*` functions?
+#
+# Well, AFAIK git has /many/ hooks but not a simple 'repo modified
+# hook'. Besides any hook usage that would turn this into a 3-step
+# install (zsh source/set prompt/add git hooks) instead of just (zsh
+# source/set prompt).
+#-------------------------------------------------------------------
 function git_prompt_preexec_is_git_command() {
     if [[ $2 =~ git* ]]; then
         RAN_GIT_COMMAND=1
@@ -39,12 +43,13 @@ function git_prompt_preexec_is_git_command() {
 function git_prompt_precmd_update() {
     if [ $RAN_GIT_COMMAND ]; then
         if [ $INSIDE_GIT_REPOSITORY ]; then
-            echo git-prompt-debug: ran inside 1>&2
+            # echo git-prompt-debug: ran inside 1>&2
             git_prompt_update_vars
         fi
         unset RAN_GIT_COMMAND
     fi
 }
+#-------------------------------------------------------------------
 
 # Updates the git status variables.
 #
