@@ -74,6 +74,7 @@ function git_prompt_update_vars() {
     GIT_CHANGED=`git diff --no-color --name-status --diff-filter=ACDMRTXB 2> /dev/null | wc -l `
     GIT_CONFLICTS=`git diff --no-color --name-status --diff-filter=U 2> /dev/null | wc -l `
     GIT_UNTRACKED=`git ls-files --others --exclude-standard 2> /dev/null | wc -l `
+    GIT_STASH=`git stash list | wc -l`
 }
 
 # Initialize colors.
@@ -93,6 +94,9 @@ function git_prompt_update_status() {
     fi
     if [ $GIT_CHANGED -ne 0 ]; then
 	DETAILS=$DETAILS$ZSH_GIT_PROMPT_THEME_CHANGED$GIT_CHANGED$reset
+    fi
+    if [ $GIT_STASH -ne 0 ]; then
+        DETAILS=$DETAILS$ZSH_GIT_PROMPT_THEME_STASH$GIT_STASH$reset
     fi
     if [ $GIT_UNTRACKED -ne 0 ]; then
         DETAILS=$DETAILS$ZSH_GIT_PROMPT_THEME_UNTRACKED$reset
@@ -121,5 +125,6 @@ ZSH_GIT_PROMPT_THEME_UNTRACKED="…"
 # add colors to these themes if you wish...
 ZSH_GIT_PROMPT_THEME_BRANCH=""
 ZSH_GIT_PROMPT_THEME_STAGED="."
+ZSH_GIT_PROMPT_THEME_STASH="s"
 ZSH_GIT_PROMPT_THEME_CONFLICTS="x"
 ZSH_GIT_PROMPT_THEME_CHANGED="+"
