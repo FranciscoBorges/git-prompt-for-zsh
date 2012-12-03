@@ -55,21 +55,24 @@ function git_prompt_precmd_update() {
 #
 # It is executed on every directory change and so it controls
 # $INSIDE_GIT_REPOSITORY.  Also as it updates the variables, it is
-# also responsible to unset GIT_STATUS
+# responsible to unset GIT_STATUS
 function git_prompt_update_vars() {
     unset INSIDE_GIT_REPOSITORY
-    GIT_BRANCH=` git branch --no-color 2> /dev/null | grep "^\* " | cut -f 2 -d ' ' `
+    GIT_BRANCH=` git branch --no-color 2> /dev/null | \grep --color=never "^\* " | sed 's/^\* //' `
     #echo git-prompt-debug: $GIT_BRANCH 1>&2
     if [[ -z $GIT_BRANCH ]]; then
 	# not in a git repo
         return
     fi
+    if [[ $GIT_BRANCH == '(no branch)' ]]; then
+        GIT_BRANCH=` git log --no-color -1 --oneline | cut -f 1 -d ' ' `
+    fi
     INSIDE_GIT_REPOSITORY=1
     unset GIT_PROMPT_INFO
     # ACDMRTXB
-    GIT_STAGED=`git diff --staged --name-status --diff-filter=ACDMRTXB 2> /dev/null | wc -l `
-    GIT_CHANGED=`git diff --name-status --diff-filter=ACDMRTXB 2> /dev/null | wc -l `
-    GIT_CONFLICTS=`git diff --name-status --diff-filter=U 2> /dev/null | wc -l `
+    GIT_STAGED=`git diff --no-color --staged --name-status --diff-filter=ACDMRTXB 2> /dev/null | wc -l `
+    GIT_CHANGED=`git diff --no-color --name-status --diff-filter=ACDMRTXB 2> /dev/null | wc -l `
+    GIT_CONFLICTS=`git diff --no-color --name-status --diff-filter=U 2> /dev/null | wc -l `
     GIT_UNTRACKED=`git ls-files --others --exclude-standard 2> /dev/null | wc -l `
 }
 
@@ -81,7 +84,7 @@ function git_prompt_update_status() {
     local reset
     reset="%{${reset_color}%}"
 
-    BRANCH=$ZSH_GIT_PROMPT_THEME_BRANCH$GIT_BRANCH
+    BRANCH=$ZSH_GIT_PROMPT_THEME_BRANCH$GIT_BRANCH$reset
     if [ $GIT_STAGED -ne 0 ]; then
 	DETAILS=$DETAILS$ZSH_GIT_PROMPT_THEME_STAGED$GIT_STAGED$reset
     fi
@@ -95,7 +98,7 @@ function git_prompt_update_status() {
         DETAILS=$DETAILS$ZSH_GIT_PROMPT_THEME_UNTRACKED$reset
     fi
     if [[ ! ( -z $DETAILS ) ]]; then
-        BRANCH=$BRANCH$ZSH_GIT_PROMPT_THEME_SEPARATOR$DETAILS
+        BRANCH=$BRANCH$ZSH_GIT_PROMPT_THEME_SEPARATOR$DETAILS$reset
     fi
     GIT_PROMPT_INFO=$ZSH_GIT_PROMPT_THEME_PREFIX$BRANCH$reset$ZSH_GIT_PROMPT_THEME_SUFFIX
 }
