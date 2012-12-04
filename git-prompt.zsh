@@ -51,6 +51,34 @@ function git_prompt_precmd_update() {
 }
 #-------------------------------------------------------------------
 
+#-------------------------------------------------------------------
+# Function taken from git-1.8.0/contrib/completion/git-prompt.sh
+#-------------------------------------------------------------------
+# __gitdir accepts 0 or 1 arguments (i.e., location)
+# returns location of .git repo
+__gitdir ()
+{
+        # Note: this function is duplicated in git-completion.bash
+        # When updating it, make sure you update the other one to match.
+        if [ -z "${1-}" ]; then
+                if [ -n "${__git_dir-}" ]; then
+                        echo "$__git_dir"
+                elif [ -n "${GIT_DIR-}" ]; then
+                        test -d "${GIT_DIR-}" || return 1
+                        echo "$GIT_DIR"
+                elif [ -d .git ]; then
+                        echo .git
+                else
+                        git rev-parse --git-dir 2>/dev/null
+                fi
+        elif [ -d "$1/.git" ]; then
+                echo "$1/.git"
+        else
+                echo "$1"
+        fi
+}
+#-------------------------------------------------------------------
+
 # Updates the git status variables.
 #
 # It is executed on every directory change and so it controls
@@ -66,6 +94,10 @@ function git_prompt_update_vars() {
     fi
     if [[ $GIT_BRANCH == '(no branch)' ]]; then
         GIT_BRANCH=` git log --no-color -1 --oneline | cut -f 1 -d ' ' `
+        local dir="$(__gitdir)"
+        if [ -d "$dir"/rebase-apply ] || [ -d "$dir"/rebase-merge ]; then
+            GIT_BRANCH=$GIT_BRANCH":REBASE"
+        fi
     fi
     INSIDE_GIT_REPOSITORY=1
     unset GIT_PROMPT_INFO
