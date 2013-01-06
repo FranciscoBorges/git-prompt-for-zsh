@@ -86,7 +86,8 @@ __gitdir ()
 # responsible to unset GIT_STATUS
 function git_prompt_update_vars() {
     unset INSIDE_GIT_REPOSITORY
-    GIT_BRANCH=` git branch --no-color 2> /dev/null | \grep --color=never "^\* " | sed 's/^\* //' `
+    GIT_BRANCH=` git rev-parse --abbrev-ref=strict HEAD 2>/dev/null `
+    # echo $pipestatus
     #echo git-prompt-debug: $GIT_BRANCH 1>&2
     if [[ -z $GIT_BRANCH ]]; then
 	# not in a git repo
