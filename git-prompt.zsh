@@ -83,8 +83,8 @@ __gitdir ()
 # Returns 0 if the specified string contains the specified substring,
 # otherwise returns 1.
 function contains() {
-    string="$1"
-    substring="$2"
+    local string="$1"
+    local substring="$2"
     if test "${string#*$substring}" != "$string"
     then
         return 0    # $substring is in $string
