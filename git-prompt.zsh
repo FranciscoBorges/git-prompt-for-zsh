@@ -15,6 +15,7 @@
 
 # Perform function/command substitutions in the prompt.
 setopt PROMPT_SUBST
+#setopt XTRACE
 
 autoload -U add-zsh-hook
 
@@ -79,6 +80,19 @@ __gitdir ()
 }
 #-------------------------------------------------------------------
 
+# Returns 0 if the specified string contains the specified substring,
+# otherwise returns 1.
+function contains() {
+    string="$1"
+    substring="$2"
+    if test "${string#*$substring}" != "$string"
+    then
+        return 0    # $substring is in $string
+    else
+        return 1    # $substring is not in $string
+    fi
+}
+
 # Updates the git status variables.
 #
 # It is executed on every directory change and so it controls
@@ -93,6 +107,10 @@ function git_prompt_update_vars() {
 	# not in a git repo
         return
     fi
+
+    # Don't run if inside .git
+    if contains $PWD .git; then return; fi
+
     if [[ $GIT_BRANCH == '(no branch)' ]]; then
         GIT_BRANCH=` git log --no-color -1 --oneline | cut -f 1 -d ' ' `
         local dir="$(__gitdir)"
