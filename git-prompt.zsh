@@ -125,7 +125,7 @@ function git_prompt_update_vars() {
     GIT_CHANGED=`git diff --no-color --name-status --diff-filter=ACDMRTXB 2> /dev/null | wc -l `
     GIT_CONFLICTS=`git diff --no-color --name-status --diff-filter=U 2> /dev/null | wc -l `
     if contains $PWD blt; then
-        GIT_UNTRACKED=''
+        GIT_UNTRACKED=0
     else
         GIT_UNTRACKED=`git ls-files --others --exclude-standard 2> /dev/null | wc -l `
     fi
@@ -150,10 +150,10 @@ function git_prompt_update_status() {
     if [ $GIT_CHANGED -ne 0 ]; then
 	DETAILS=$DETAILS$ZSH_GIT_PROMPT_THEME_CHANGED$GIT_CHANGED$reset
     fi
-    if [ $GIT_STASH -ne 0 ]; then
+    if [[ -n $GIT_STASH && $GIT_STASH -ne 0 ]]; then
         DETAILS=$DETAILS$ZSH_GIT_PROMPT_THEME_STASH$GIT_STASH$reset
     fi
-    if [ $GIT_UNTRACKED -ne 0 ]; then
+    if [[ -n $GIT_UNTRACKED && $GIT_UNTRACKED -ne 0 ]]; then
         DETAILS=$DETAILS$ZSH_GIT_PROMPT_THEME_UNTRACKED$reset
     fi
     if [[ ! ( -z $DETAILS ) ]]; then
