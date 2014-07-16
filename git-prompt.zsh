@@ -124,7 +124,11 @@ function git_prompt_update_vars() {
     GIT_STAGED=`git diff --no-color --staged --name-status --diff-filter=ACDMRTXB 2> /dev/null | wc -l `
     GIT_CHANGED=`git diff --no-color --name-status --diff-filter=ACDMRTXB 2> /dev/null | wc -l `
     GIT_CONFLICTS=`git diff --no-color --name-status --diff-filter=U 2> /dev/null | wc -l `
-    GIT_UNTRACKED=`git ls-files --others --exclude-standard 2> /dev/null | wc -l `
+    if contains $PWD blt; then
+        GIT_UNTRACKED=''
+    else
+        GIT_UNTRACKED=`git ls-files --others --exclude-standard 2> /dev/null | wc -l `
+    fi
     GIT_STASH=`git stash list | wc -l`
 }
 
