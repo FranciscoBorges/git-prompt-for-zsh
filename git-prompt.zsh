@@ -102,6 +102,7 @@ function git_prompt_update_vars() {
     unset INSIDE_GIT_REPOSITORY
     typeset -g GIT_BRANCH INSIDE_GIT_REPOSITORY GIT_CONFLICTS GIT_CHANGED GIT_STAGED \
             GIT_UNTRACKED GIT_STASH
+    typeset -g GIT_BRANCH
     GIT_BRANCH=` git rev-parse --abbrev-ref=strict HEAD 2>/dev/null `
     # echo $pipestatus
     #echo git-prompt-debug: $GIT_BRANCH 1>&2
@@ -120,7 +121,7 @@ function git_prompt_update_vars() {
             GIT_BRANCH=$GIT_BRANCH":REBASE"
         fi
     fi
-    INSIDE_GIT_REPOSITORY=1
+    typeset -g INSIDE_GIT_REPOSITORY=1
     unset GIT_PROMPT_INFO
     # ACDMRTXB
     GIT_STAGED=`git diff --no-color --staged --name-status --diff-filter=ACDMRTXB 2> /dev/null | wc -l `
