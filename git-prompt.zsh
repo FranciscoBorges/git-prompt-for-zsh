@@ -37,7 +37,7 @@ add-zsh-hook precmd git_prompt_precmd_update
 #-------------------------------------------------------------------
 function git_prompt_preexec_is_git_command() {
     if [[ $2 =~ git* ]]; then
-        RAN_GIT_COMMAND=1
+        typeset -g RAN_GIT_COMMAND=1
     fi
 }
 
@@ -100,6 +100,8 @@ function contains() {
 # responsible to unset GIT_STATUS
 function git_prompt_update_vars() {
     unset INSIDE_GIT_REPOSITORY
+    typeset -g GIT_BRANCH INSIDE_GIT_REPOSITORY GIT_CONFLICTS GIT_CHANGED GIT_STAGED \
+            GIT_UNTRACKED GIT_STASH
     GIT_BRANCH=` git rev-parse --abbrev-ref=strict HEAD 2>/dev/null `
     # echo $pipestatus
     #echo git-prompt-debug: $GIT_BRANCH 1>&2
@@ -139,7 +141,7 @@ colors
 function git_prompt_update_status() {
     local reset
     reset="%{${reset_color}%}"
-
+    typeset -g BRANCH DETAILS GIT_PROMPT_INFO
     BRANCH=$ZSH_GIT_PROMPT_THEME_BRANCH$GIT_BRANCH$reset
     if [ $GIT_STAGED -ne 0 ]; then
 	DETAILS=$DETAILS$ZSH_GIT_PROMPT_THEME_STAGED$GIT_STAGED$reset
