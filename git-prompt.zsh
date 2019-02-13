@@ -21,7 +21,7 @@ autoload -U add-zsh-hook
 
 ## Git status variables are updated due to:
 # directory change
-add-zsh-hook chpwd git_prompt_update_vars
+add-zsh-hook chpwd git_changed_dir
 # issuing a git command
 add-zsh-hook preexec git_prompt_preexec_is_git_command
 add-zsh-hook precmd git_prompt_precmd_update
@@ -93,6 +93,14 @@ function contains() {
     fi
 }
 
+function git_changed_dir() {
+    if [[ -z $LAST_GIT_DIR ]]; then
+        export LAST_GIT_DIR=$(__gitdir| perl -pe 's;\.git$;;')
+    elif [[ $PWD =~ $LAST_GIT_DIR"*" ]]; then
+        return
+    fi
+    git_prompt_update_vars
+}
 # Updates the git status variables.
 #
 # It is executed on every directory change and so it controls
