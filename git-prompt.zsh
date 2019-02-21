@@ -57,7 +57,7 @@ function git_prompt_precmd_update() {
 #-------------------------------------------------------------------
 # __gitdir accepts 0 or 1 arguments (i.e., location)
 # returns location of .git repo
-__gitdir ()
+__gitdir_0 ()
 {
         # Note: this function is duplicated in git-completion.bash
         # When updating it, make sure you update the other one to match.
@@ -95,7 +95,7 @@ function contains() {
 
 function git_changed_dir() {
     if [[ -z $LAST_GIT_DIR ]]; then
-        export LAST_GIT_DIR=$(__gitdir| perl -pe 's;\.git$;;')
+        export LAST_GIT_DIR=$(__gitdir_0| perl -pe 's;\.git$;;')
     elif [[ $PWD =~ $LAST_GIT_DIR"*" ]]; then
         return
     fi
@@ -124,7 +124,7 @@ function git_prompt_update_vars() {
 
     if [[ $GIT_BRANCH == '(no branch)' ]]; then
         GIT_BRANCH=` git log --no-color -1 --oneline | cut -f 1 -d ' ' `
-        local dir="$(__gitdir)"
+        local dir="$(__gitdir_0)"
         if [ -d "$dir"/rebase-apply ] || [ -d "$dir"/rebase-merge ]; then
             GIT_BRANCH=$GIT_BRANCH":REBASE"
         fi
